@@ -1,4 +1,4 @@
-import pygame-ce
+import pygame
 from pygame.math import Vector2 as vec
 from sys import exit
 
