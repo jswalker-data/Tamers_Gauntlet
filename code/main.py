@@ -2,6 +2,7 @@ from os.path import join
 from sys import exit
 
 import pygame
+from entities import Player
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
 from sprites import Sprite
