@@ -13,6 +13,7 @@ class Game:
         pygame.init()
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption('Tamers Gauntlet')
+        self.clock = pygame.time.Clock()
 
         # groups
         self.all_sprites = pygame.sprite.Group()
@@ -41,6 +42,7 @@ class Game:
 
     def run(self):
         while True:
+            self.clock.tick()
             # event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -50,6 +52,7 @@ class Game:
             # game logic
             self.all_sprites.update()
             self.all_sprites.draw(self.display_surface)
+            print(self.clock.get_fps())
             pygame.display.update()
 
 
