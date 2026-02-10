@@ -20,12 +20,24 @@ class Game:
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'house')
 
+    # create dict of assets and locations
     def import_assets(self):
         self.tmx_maps = {'world': load_pygame(join('data', 'maps', 'world.tmx'))}
 
+    # setup the map
+    # TODO: make this generic to all locations
     def setup(self, tmx_map, player_start_pos):
+
+        # loop over the terrain layer and create sprites of them
         for x, y, surf in tmx_map.get_layer_by_name('Terrain').tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
+
+        # loop over entity layer (player or character), this is an object layer not a tile layer
+        for obj in tmx_map.get_layer_by_name('Entities'):
+            # looking at objects name (player/character) and property of position (house, hospital etc.)
+            if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
+                # here I now create a player
+                Player((obj.x, obj.y), self.all_sprites)
 
     def run(self):
         while True:
@@ -36,6 +48,7 @@ class Game:
                     exit()
 
             # game logic
+            self.all_sprites.update()
             self.all_sprites.draw(self.display_surface)
             pygame.display.update()
 
