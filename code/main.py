@@ -3,6 +3,7 @@ from sys import exit
 
 import pygame
 from entities import Player
+from groups import AllSprites
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
 from sprites import Sprite
@@ -16,7 +17,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         # groups
-        self.all_sprites = pygame.sprite.Group()
+        self.all_sprites = AllSprites()
 
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'house')
@@ -38,11 +39,15 @@ class Game:
             # looking at objects name (player/character) and property of position (house, hospital etc.)
             if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
                 # here I now create a player
-                Player((obj.x, obj.y), self.all_sprites)
+                self.player = Player((obj.x, obj.y), self.all_sprites)
 
     def run(self):
         while True:
-            self.clock.tick()
+            # for game clock we are using dt method, take speed of game
+            # and divide it through speed to get steady rate on all hardware
+            # FPS of source pc is 560 fps LOL
+            # dt is in ms
+            dt = self.clock.tick() / 1000
             # event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -50,9 +55,8 @@ class Game:
                     exit()
 
             # game logic
-            self.all_sprites.update()
-            self.all_sprites.draw(self.display_surface)
-            print(self.clock.get_fps())
+            self.all_sprites.update(dt)
+            self.all_sprites.draw(self.player.rect.center)
             pygame.display.update()
 
 
