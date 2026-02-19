@@ -20,7 +20,7 @@ class Game:
         self.all_sprites = AllSprites()
 
         self.import_assets()
-        self.setup(self.tmx_maps['hospital'], 'world')
+        self.setup(self.tmx_maps['world'], 'house')
 
     # create dict of assets and locations
     def import_assets(self):
@@ -31,15 +31,14 @@ class Game:
 
     # setup the map
     # TODO: make this generic to all locations
+    # Note: This is all in order of drawing!! So terrain, then top etc.
+    # Use sort order to do this rather then order in settings
     def setup(self, tmx_map, player_start_pos):
 
-        # loop over the terrain layer and create sprites of them
-        for x, y, surf in tmx_map.get_layer_by_name('Terrain').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
-
-        # loop over the terrain TOP layer and create sprites of them
-        for x, y, surf in tmx_map.get_layer_by_name('Terrain Top').tiles():
-            Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
+        # Simplify this double layering
+        for layer in ['Terrain', 'Terrain Top']:
+            for x, y, surf in tmx_map.get_layer_by_name(layer).tiles():
+                Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
 
         # object layer render
         for obj in tmx_map.get_layer_by_name('Objects'):
