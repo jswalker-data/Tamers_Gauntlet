@@ -41,6 +41,8 @@ class Game:
                 # here I now create a player
                 self.player = Player((obj.x, obj.y), self.all_sprites)
 
+        # objects layer
+
     def run(self):
         while True:
             # for game clock we are using dt method, take speed of game
@@ -54,8 +56,13 @@ class Game:
                     pygame.quit()
                     exit()
 
-            # game logic
+            # game logic - update sprites, fill background
+            # pygame doesnt discard previous frame, just draws ontop
+            # so fill out of the map with black
+            # TODO: make the out of bounds a coast line
+            # draw sprites and then display
             self.all_sprites.update(dt)
+            self.display_surface.fill('black')
             self.all_sprites.draw(self.player.rect.center)
             pygame.display.update()
 
