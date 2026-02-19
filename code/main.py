@@ -20,11 +20,14 @@ class Game:
         self.all_sprites = AllSprites()
 
         self.import_assets()
-        self.setup(self.tmx_maps['world'], 'house')
+        self.setup(self.tmx_maps['hospital'], 'world')
 
     # create dict of assets and locations
     def import_assets(self):
-        self.tmx_maps = {'world': load_pygame(join('data', 'maps', 'world.tmx'))}
+        self.tmx_maps = {
+            'world': load_pygame(join('data', 'maps', 'world.tmx')),
+            'hospital': load_pygame(join('data', 'maps', 'hospital.tmx')),
+        }
 
     # setup the map
     # TODO: make this generic to all locations
@@ -32,6 +35,10 @@ class Game:
 
         # loop over the terrain layer and create sprites of them
         for x, y, surf in tmx_map.get_layer_by_name('Terrain').tiles():
+            Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
+
+        # loop over the terrain TOP layer and create sprites of them
+        for x, y, surf in tmx_map.get_layer_by_name('Terrain Top').tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
 
         # object layer render
