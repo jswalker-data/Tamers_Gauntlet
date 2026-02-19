@@ -32,7 +32,7 @@ class Game:
     # setup the map
     # TODO: make this generic to all locations
     # Note: This is all in order of drawing!! So terrain, then top etc.
-    # Use sort order to do this rather then order in settings
+    # Use sort order to do this rather than order in settings
     def setup(self, tmx_map, player_start_pos):
 
         # Simplify this double layering
