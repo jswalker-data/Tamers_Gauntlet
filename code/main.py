@@ -34,14 +34,16 @@ class Game:
         for x, y, surf in tmx_map.get_layer_by_name('Terrain').tiles():
             Sprite((x * TILE_SIZE, y * TILE_SIZE), surf, self.all_sprites)
 
+        # object layer render
+        for obj in tmx_map.get_layer_by_name('Objects'):
+            Sprite((obj.x, obj.y), obj.image, self.all_sprites)
+
         # loop over entity layer (player or character), this is an object layer not a tile layer
         for obj in tmx_map.get_layer_by_name('Entities'):
             # looking at objects name (player/character) and property of position (house, hospital etc.)
             if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
                 # here I now create a player
                 self.player = Player((obj.x, obj.y), self.all_sprites)
-
-        # objects layer
 
     def run(self):
         while True:
