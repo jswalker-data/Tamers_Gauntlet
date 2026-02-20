@@ -34,7 +34,6 @@ class Game:
             'water': import_folder('graphics', 'tilesets', 'water'),
             'coast': coast_importer(24, 12, 'graphics', 'tilesets', 'coast'),
         }
-        print(self.overworld_frames['coast'])
 
     # setup the map
     # TODO: make this generic to all locations
