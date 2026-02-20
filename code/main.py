@@ -6,7 +6,8 @@ from entities import Player
 from groups import AllSprites
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
-from sprites import Sprite
+from sprites import AnimatedSprite, Sprite
+from support import coast_importer, import_folder, import_folder_dict, import_image, import_sub_folders, import_tilemap
 
 
 class Game:
@@ -27,6 +28,11 @@ class Game:
         self.tmx_maps = {
             'world': load_pygame(join('data', 'maps', 'world.tmx')),
             'hospital': load_pygame(join('data', 'maps', 'hospital.tmx')),
+        }
+
+        self.overworld_frames = {
+            'water': import_folder('graphics', 'tilesets', 'water'),
+            'coast': coast_importer(24, 12, 'graphics', 'tilesets', 'coast'),
         }
 
     # setup the map
@@ -50,6 +56,18 @@ class Game:
             if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
                 # here I now create a player
                 self.player = Player((obj.x, obj.y), self.all_sprites)
+
+        # water is animated, so multi frames per sprite
+        for obj in tmx_map.get_layer_by_name('Water'):
+            for x in range(int(obj.x), int(obj.x + obj.width), TILE_SIZE):
+                for y in range(int(obj.y), int(obj.y + obj.height), TILE_SIZE):
+                    AnimatedSprite((x, y), self.overworld_frames['water'], self.all_sprites)
+
+        # coast animation
+        for obj in tmx_map.get_layer_by_name('Coast'):
+            terrain = obj.properties['terrain']
+            side = obj.properties['side']
+            AnimatedSprite((obj.x, obj.y), self.overworld_frames['coast'][terrain][side], self.all_sprites)
 
     def run(self):
         while True:
