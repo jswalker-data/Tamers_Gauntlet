@@ -6,7 +6,8 @@ from entities import Player
 from groups import AllSprites
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
-from sprites import Sprite
+from sprites import Sprite, AnimatedSprite
+from support import import_folder, import_folder_dict, import_image, import_sub_folders, import_tilemap
 
 
 class Game:
@@ -29,6 +30,8 @@ class Game:
             'hospital': load_pygame(join('data', 'maps', 'hospital.tmx')),
         }
 
+        self.overworld_frames = {'water': import_folder('graphics', 'tilesets', 'water')}
+
     # setup the map
     # TODO: make this generic to all locations
     # Note: This is all in order of drawing!! So terrain, then top etc.
@@ -50,6 +53,12 @@ class Game:
             if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
                 # here I now create a player
                 self.player = Player((obj.x, obj.y), self.all_sprites)
+
+        # water is animated, so multi frames per sprite
+        for obj in tmx_map.get_layer_by_name('Water'):
+            for x in range(int(obj.x), int(obj.x + obj.width), TILE_SIZE):
+                for y in range(int(obj.y), int(obj.y + obj.height), TILE_SIZE):
+                    AnimatedSprite((x, y), self.overworld_frames['water'], self.all_sprites)
 
     def run(self):
         while True:
