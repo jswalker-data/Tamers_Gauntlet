@@ -56,6 +56,17 @@ def import_tilemap(cols, rows, *path):
     return frames
 
 
+# def character_importer(*path):
+
+
+def all_character_import(*path):
+    new_dict = {}
+    for _, __, image_names in walk(join(*path)):
+        for image in image_names:
+            image_name = image.split('.')[0]
+            new_dict[image_name] = character_importer(4, 4, *path)
+
+
 def coast_importer(cols, rows, *path):
     frame_dict = import_tilemap(cols, rows, *path)
     new_dict = {}

@@ -7,7 +7,15 @@ from groups import AllSprites
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
 from sprites import AnimatedSprite, Sprite
-from support import coast_importer, import_folder, import_folder_dict, import_image, import_sub_folders, import_tilemap
+from support import (
+    coast_importer,
+    import_folder,
+    import_folder_dict,
+    import_image,
+    import_sub_folders,
+    import_tilemap,git 
+    all_character_import,
+)
 
 
 class Game:
@@ -33,6 +41,7 @@ class Game:
         self.overworld_frames = {
             'water': import_folder('graphics', 'tilesets', 'water'),
             'coast': coast_importer(24, 12, 'graphics', 'tilesets', 'coast'),
+            'characters': all_character_import('graphics', 'characters'),
         }
 
     # setup the map
