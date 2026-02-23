@@ -10,21 +10,29 @@ class Entity(pygame.sprite.Sprite):
         # graphics
         self.frame_index = 0
         self.frames = frames
+        self.facing_direction = 'down'
+
+        # movement
+        self.direction = vector()
+        self.speed = 250
 
         # sprite setup
-        self.image = self.frames['down'][self.frame_index]
+        self.image = self.frames[self.get_state()][self.frame_index]
         self.rect = self.image.get_frect(center=pos)
 
     def animate(self, dt):
         self.frame_index += ANIMATION_SPEED * dt
-        self.image = self.frames['down'][int(self.frame_index % len(self.frames['down']))]
+        self.image = self.frames[self.get_state()][int(self.frame_index % len(self.frames[self.get_state()]))]
+
+    def get_state(self):
+        moving = bool(self.direction)
+
+        return f'{self.facing_direction}{"" if moving else "_idle"}'
 
 
 class Player(Entity):
     def __init__(self, pos, frames, groups):
         super().__init__(pos, frames, groups)
-
-        self.direction = vector()
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -40,7 +48,7 @@ class Player(Entity):
         self.direction = input_vector
 
     def move(self, dt):
-        self.rect.center += self.direction * 250 * dt
+        self.rect.center += self.direction * self.speed * dt
 
     # calls the update method
     def update(self, dt):
