@@ -59,6 +59,10 @@ class Game:
         for obj in tmx_map.get_layer_by_name('Objects'):
             Sprite((obj.x, obj.y), obj.image, self.all_sprites)
 
+        # grass patches
+        for obj in tmx_map.get_layer_by_name('Monsters'):
+            Sprite((obj.x, obj.y), obj.image, self.all_sprites)
+
         # loop over entity layer (player or character), this is an object layer not a tile layer
         for obj in tmx_map.get_layer_by_name('Entities'):
             # looking at objects name (player/character) and property of position (house, hospital etc.)
