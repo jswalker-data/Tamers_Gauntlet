@@ -1,15 +1,28 @@
 import pygame
 from pygame.math import Vector2 as vector
+from settings import ANIMATION_SPEED
 
-# from settings import *
 
-
-class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, groups):
+class Entity(pygame.sprite.Sprite):
+    def __init__(self, pos, frames, groups):
         super().__init__(groups)
-        self.image = pygame.Surface((100, 100))
-        self.image.fill('red')
+
+        # graphics
+        self.frame_index = 0
+        self.frames = frames
+
+        # sprite setup
+        self.image = self.frames['down'][self.frame_index]
         self.rect = self.image.get_frect(center=pos)
+
+    def animate(self, dt):
+        self.frame_index += ANIMATION_SPEED * dt
+        self.image = self.frames['down'][int(self.frame_index % len(self.frames['down']))]
+
+
+class Player(Entity):
+    def __init__(self, pos, frames, groups):
+        super().__init__(pos, frames, groups)
 
         self.direction = vector()
 
@@ -33,3 +46,4 @@ class Player(pygame.sprite.Sprite):
     def update(self, dt):
         self.input()
         self.move(dt)
+        self.animate(dt)

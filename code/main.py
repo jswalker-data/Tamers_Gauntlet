@@ -8,13 +8,13 @@ from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
 from sprites import AnimatedSprite, Sprite
 from support import (
+    all_character_import,
     coast_importer,
     import_folder,
     import_folder_dict,
     import_image,
     import_sub_folders,
-    import_tilemap,git 
-    all_character_import,
+    import_tilemap,
 )
 
 
@@ -64,7 +64,9 @@ class Game:
             # looking at objects name (player/character) and property of position (house, hospital etc.)
             if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
                 # here I now create a player
-                self.player = Player((obj.x, obj.y), self.all_sprites)
+                self.player = Player(
+                    pos=(obj.x, obj.y), frames=self.overworld_frames['characters']['player'], groups=self.all_sprites
+                )
 
         # water is animated, so multi frames per sprite
         for obj in tmx_map.get_layer_by_name('Water'):
