@@ -1,11 +1,12 @@
 import pygame
 from pygame.math import Vector2 as vector
-from settings import ANIMATION_SPEED
+from settings import ANIMATION_SPEED, WORLD_LAYERS
 
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, frames, groups, facing_direction):
         super().__init__(groups)
+        self.z = WORLD_LAYERS['main']
 
         # graphics
         self.frame_index = 0
