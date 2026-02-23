@@ -2,12 +2,20 @@ from os.path import join
 from sys import exit
 
 import pygame
-from entities import Player
+from entities import Character, Player
 from groups import AllSprites
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH
 from sprites import AnimatedSprite, Sprite
-from support import coast_importer, import_folder, import_folder_dict, import_image, import_sub_folders, import_tilemap
+from support import (
+    all_character_import,
+    coast_importer,
+    import_folder,
+    import_folder_dict,
+    import_image,
+    import_sub_folders,
+    import_tilemap,
+)
 
 
 class Game:
@@ -33,6 +41,7 @@ class Game:
         self.overworld_frames = {
             'water': import_folder('graphics', 'tilesets', 'water'),
             'coast': coast_importer(24, 12, 'graphics', 'tilesets', 'coast'),
+            'characters': all_character_import('graphics', 'characters'),
         }
 
     # setup the map
@@ -53,9 +62,22 @@ class Game:
         # loop over entity layer (player or character), this is an object layer not a tile layer
         for obj in tmx_map.get_layer_by_name('Entities'):
             # looking at objects name (player/character) and property of position (house, hospital etc.)
-            if obj.name == 'Player' and obj.properties['pos'] == player_start_pos:
-                # here I now create a player
-                self.player = Player((obj.x, obj.y), self.all_sprites)
+            if obj.name == 'Player':
+                if obj.properties['pos'] == player_start_pos:
+                    # here I now create a player
+                    self.player = Player(
+                        pos=(obj.x, obj.y),
+                        frames=self.overworld_frames['characters']['player'],
+                        groups=self.all_sprites,
+                        facing_direction=obj.properties['direction'],
+                    )
+            else:
+                self.Character = Character(
+                    pos=(obj.x, obj.y),
+                    frames=self.overworld_frames['characters'][obj.properties['graphic']],
+                    groups=self.all_sprites,
+                    facing_direction=obj.properties['direction'],
+                )
 
         # water is animated, so multi frames per sprite
         for obj in tmx_map.get_layer_by_name('Water'):
