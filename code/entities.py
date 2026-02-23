@@ -22,7 +22,11 @@ class Entity(pygame.sprite.Sprite):
 
     def animate(self, dt):
         self.frame_index += ANIMATION_SPEED * dt
-        self.image = self.frames[self.get_state()][int(self.frame_index % len(self.frames[self.get_state()]))]
+
+        state = self.get_state()
+        frames_for_state = self.frames[state]
+
+        self.image = frames_for_state[int(self.frame_index % len(frames_for_state))]
 
     def get_state(self):
         moving = bool(self.direction)
