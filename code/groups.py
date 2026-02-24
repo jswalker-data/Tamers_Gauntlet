@@ -1,6 +1,8 @@
 import pygame
 from pygame.math import Vector2 as vector
 from settings import WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_LAYERS
+from support import import_image
+from entities import Entity
 
 
 # this is a copy of the in built sprite group
@@ -11,6 +13,7 @@ class AllSprites(pygame.sprite.Group):
         # always draw on display surface
         self.display_surface = pygame.display.get_surface()
         self.offset = vector()
+        self.shadow_surf = import_image('graphics', 'other', 'shadow')
 
     # need a custom draw method
     def draw(self, player_center):
@@ -26,4 +29,7 @@ class AllSprites(pygame.sprite.Group):
         for layer in (bg_sprites, main_sprites, fg_sprites):
             for sprite in layer:
                 offset_pos = sprite.rect.topleft - self.offset
+
+                if isinstance(sprite, Entity):
+                    self.display_surface.blit(self.shadow_surf, offset_pos + vector(40, 110))
                 self.display_surface.blit(sprite.image, offset_pos)
