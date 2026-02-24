@@ -6,7 +6,7 @@ from entities import Character, Player
 from groups import AllSprites
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_LAYERS
-from sprites import AnimatedSprite, Sprite
+from sprites import AnimatedSprite, MonsterPatchSprite, Sprite
 from support import (
     all_character_import,
     coast_importer,
@@ -78,7 +78,7 @@ class Game:
 
         # grass patches
         for obj in tmx_map.get_layer_by_name('Monsters'):
-            Sprite((obj.x, obj.y), obj.image, self.all_sprites)
+            MonsterPatchSprite((obj.x, obj.y), obj.image, self.all_sprites, obj.properties['biome'])
 
         # loop over entity layer (player or character), this is an object layer not a tile layer
         for obj in tmx_map.get_layer_by_name('Entities'):

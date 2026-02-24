@@ -19,7 +19,7 @@ class AllSprites(pygame.sprite.Group):
 
         bg_sprites = [sprite for sprite in self if sprite.z < WORLD_LAYERS['main']]
         main_sprites = sorted(
-            [sprite for sprite in self if sprite.z == WORLD_LAYERS['main']], key=lambda sprite: sprite.rect.centery
+            [sprite for sprite in self if sprite.z == WORLD_LAYERS['main']], key=lambda sprite: sprite.y_sort
         )
         fg_sprites = [sprite for sprite in self if sprite.z > WORLD_LAYERS['main']]
 
