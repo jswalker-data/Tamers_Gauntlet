@@ -13,7 +13,7 @@ class Sprite(pygame.sprite.Sprite):
 
 class MonsterPatchSprite(Sprite):
     def __init__(self, pos, surf, groups, biome):
-        self.boime = biome
+        self.biome = biome
         super().__init__(pos, surf, groups, WORLD_LAYERS['main' if biome != 'sand' else 'bg'])
         self.y_sort -= 40
 
