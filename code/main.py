@@ -113,6 +113,10 @@ class Game:
         if keys[pygame.K_SPACE]:
             for character in self.character_sprites:
                 if check_connections(100, self.player, character):
+                    self.player.block()
+                    # entities face each other
+                    # dialog
+
                     print('dialog')
 
     def run(self):
