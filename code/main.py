@@ -2,7 +2,9 @@ from os.path import join
 from sys import exit
 
 import pygame
+from dialog import DialogTree
 from entities import Character, Player
+from game_data import TRAINER_DATA
 from groups import AllSprites
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_LAYERS
@@ -46,6 +48,9 @@ class Game:
             'coast': coast_importer(24, 12, 'graphics', 'tilesets', 'coast'),
             'characters': all_character_import('graphics', 'characters'),
         }
+
+        # import fonts
+        self.fonts = {'dialog': pygame.font.Font(join('graphics', 'fonts', 'PixeloidSans.ttf'), 30)}
 
     # setup the map
     # TODO: make this generic to all locations
@@ -106,6 +111,7 @@ class Game:
                     frames=self.overworld_frames['characters'][obj.properties['graphic']],
                     groups=(self.all_sprites, self.collision_sprites, self.character_sprites),
                     facing_direction=obj.properties['direction'],
+                    character_data=TRAINER_DATA[obj.properties['character_id']],
                 )
 
     def input(self):
@@ -114,10 +120,11 @@ class Game:
             for character in self.character_sprites:
                 if check_connections(100, self.player, character):
                     self.player.block()
-                    # entities face each other
-                    # dialog
+                    character.change_facing_direction(self.player.rect.center)
+                    self.create_dialog(character)
 
-                    print('dialog')
+    def create_dialog(self, character):
+        DialogTree(character, self.player, self.all_sprites, self.fonts['dialog'])
 
     def run(self):
         while True:
