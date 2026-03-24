@@ -20,6 +20,8 @@ class Entity(pygame.sprite.Sprite):
         # sprite setup
         self.image = self.frames[self.get_state()][self.frame_index]
         self.rect = self.image.get_frect(center=pos)
+        self.hitbox = self.rect.inflate(-self.rect.width / 2, -60)
+
         self.y_sort = self.rect.centery
 
     def animate(self, dt):
@@ -42,8 +44,9 @@ class Entity(pygame.sprite.Sprite):
 
 
 class Player(Entity):
-    def __init__(self, pos, frames, groups, facing_direction):
+    def __init__(self, pos, frames, groups, facing_direction, collision_sprites):
         super().__init__(pos, frames, groups, facing_direction)
+        self.collision_sprites = collision_sprites
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -59,7 +62,16 @@ class Player(Entity):
         self.direction = input_vector
 
     def move(self, dt):
-        self.rect.center += self.direction * self.speed * dt
+        self.rect.centerx += self.direction.x * self.speed * dt
+        self.hitbox.centerx = self.rect.centerx
+        self.collisions('horizontal')
+
+    def collisions(self, axis):
+        for sprite in self.collision_sprites:
+            if sprite.hitbox.colliderect(self.hitbox):
+                if self.direction.x > 0:
+                    self.hitbox.right = sprite.hitbox.left
+                self.rect.centerx = self.hitbox.centerx
 
     # calls the update method
     def update(self, dt):
