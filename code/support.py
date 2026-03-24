@@ -3,9 +3,10 @@ from os.path import join
 
 import pygame
 from pytmx.util_pygame import load_pygame
+from pygame.math import Vector2 as vector
 
 
-# imports
+# import functiond
 def import_image(*path, alpha=True, format='png'):
     full_path = join(*path) + f'.{format}'
     surf = pygame.image.load(full_path).convert_alpha() if alpha else pygame.image.load(full_path).convert()
@@ -93,3 +94,10 @@ def coast_importer(cols, rows, *path):
         for key, pos in sides.items():
             new_dict[terrain][key] = [frame_dict[(pos[0] + index * 3, pos[1] + row)] for row in range(0, rows, 3)]
     return new_dict
+
+
+# game functions
+def check_connections(radius, entity, target, tolerance=30):
+    relation = vector(target.rect.center) - vector(entity.rect.center)
+    if relation.length() < radius:
+        return True
