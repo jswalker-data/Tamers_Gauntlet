@@ -17,6 +17,11 @@ class DialogTree:
 
         self.current_dialog = DialogSprite(self.dialog[self.dialog_index], self.character, self.all_sprites, self.font)
 
+    def input(self):
+        keys = pygame.key.get_just_pressed()
+        if keys[pygame.K_SPACE]:
+            self.current_dialog.kill()
+
 
 class DialogSprite(pygame.sprite.Sprite):
     def __init__(self, message, character, groups, font):
