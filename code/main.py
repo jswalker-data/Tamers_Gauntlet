@@ -2,13 +2,16 @@ from os.path import join
 from sys import exit
 
 import pygame
+from dialog import DialogTree
 from entities import Character, Player
+from game_data import TRAINER_DATA
 from groups import AllSprites
 from pytmx.util_pygame import load_pygame
 from settings import TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_LAYERS
 from sprites import AnimatedSprite, BorderSprite, CollidableSprite, MonsterPatchSprite, Sprite
 from support import (
     all_character_import,
+    check_connections,
     coast_importer,
     import_folder,
     import_folder_dict,
@@ -28,9 +31,12 @@ class Game:
         # groups
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
+        self.character_sprites = pygame.sprite.Group()
 
         self.import_assets()
         self.setup(self.tmx_maps['world'], 'house')
+
+        self.dialog_tree = None
 
     # create dict of assets and locations
     def import_assets(self):
@@ -44,6 +50,9 @@ class Game:
             'coast': coast_importer(24, 12, 'graphics', 'tilesets', 'coast'),
             'characters': all_character_import('graphics', 'characters'),
         }
+
+        # import fonts
+        self.fonts = {'dialog': pygame.font.Font(join('graphics', 'fonts', 'PixeloidSans.ttf'), 30)}
 
     # setup the map
     # TODO: make this generic to all locations
@@ -102,9 +111,35 @@ class Game:
                 self.Character = Character(
                     pos=(obj.x, obj.y),
                     frames=self.overworld_frames['characters'][obj.properties['graphic']],
-                    groups=(self.all_sprites, self.collision_sprites),
+                    groups=(self.all_sprites, self.collision_sprites, self.character_sprites),
                     facing_direction=obj.properties['direction'],
+                    character_data=TRAINER_DATA[obj.properties['character_id']],
+                    player=self.player,
+                    create_dialog=self.create_dialog,
+                    collision_sprites=self.collision_sprites,
+                    radius=obj.properties['radius'],
                 )
+
+    def input(self):
+        if not self.dialog_tree:
+            keys = pygame.key.get_just_pressed()
+            if keys[pygame.K_SPACE]:
+                for character in self.character_sprites:
+                    if check_connections(100, self.player, character):
+                        self.player.block()
+                        character.change_facing_direction(self.player.rect.center)
+                        self.create_dialog(character)
+                        character.can_rotate = False
+
+    def create_dialog(self, character):
+        if not self.dialog_tree:
+            self.dialog_tree = DialogTree(
+                character, self.player, self.all_sprites, self.fonts['dialog'], self.end_dialog
+            )
+
+    def end_dialog(self, character):
+        self.dialog_tree = None
+        self.player.unblock()
 
     def run(self):
         while True:
@@ -124,9 +159,15 @@ class Game:
             # so fill out of the map with black
             # TODO: make the out of bounds a coast line
             # draw sprites and then display
+            self.input()
             self.all_sprites.update(dt)
             self.display_surface.fill('black')
-            self.all_sprites.draw(self.player.rect.center)
+            self.all_sprites.draw(self.player)
+
+            # overlays
+            if self.dialog_tree:
+                self.dialog_tree.update()
+
             pygame.display.update()
 
 
