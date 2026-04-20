@@ -1,7 +1,6 @@
-from settings import *
 import pygame
-from settings import COLOURS, WORLD_LAYERS
 from pygame.math import Vector2 as vector
+from settings import COLOURS, WORLD_LAYERS
 from timer import Timer
 
 

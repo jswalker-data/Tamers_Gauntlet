@@ -177,6 +177,7 @@ class Character(Entity):
                 self.direction = vector()
                 self.has_moved = True
                 self.create_dialog(self)
+                self.player.noticed = False
 
     def update(self, dt):
         for timer in self.timers.values():
@@ -186,3 +187,6 @@ class Character(Entity):
         if self.character_data['look_around']:
             self.raycast()
             self.move(dt)
+
+        # keep render order after movement, avoid glitches
+        self.y_sort = self.rect.centery

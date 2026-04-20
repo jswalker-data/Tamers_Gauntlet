@@ -2,11 +2,10 @@ from os import walk
 from os.path import join
 
 import pygame
-from pytmx.util_pygame import load_pygame
 from pygame.math import Vector2 as vector
 
 
-# import functiond
+# import functions
 def import_image(*path, alpha=True, format='png'):
     full_path = join(*path) + f'.{format}'
     surf = pygame.image.load(full_path).convert_alpha() if alpha else pygame.image.load(full_path).convert()
