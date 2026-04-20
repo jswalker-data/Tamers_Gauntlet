@@ -2,6 +2,8 @@ import pygame
 from pygame.math import Vector2 as vector
 from settings import ANIMATION_SPEED, WORLD_LAYERS
 from support import check_connections
+from timer import Timer
+from random import choice
 
 
 class Entity(pygame.sprite.Sprite):
@@ -63,6 +65,7 @@ class Player(Entity):
     def __init__(self, pos, frames, groups, facing_direction, collision_sprites):
         super().__init__(pos, frames, groups, facing_direction)
         self.collision_sprites = collision_sprites
+        self.noticed = False
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -126,16 +129,33 @@ class Character(Entity):
         self.can_rotate = True
         self.has_noticed = False
         self.radius = int(radius)
-        self.view_directions = ['left', 'right']
+        self.view_directions = character_data['directions']
+
+        self.timers = {
+            'look around': Timer(1500, autostart=True, repeat=True, func=self.random_view_direction),
+            'notice': Timer(500, func=self.start_move),
+        }
+
+    def random_view_direction(self):
+        if self.can_rotate:
+            self.facing_direction = choice(self.view_directions)
 
     def get_dialog(self):
         return self.character_data['dialog'][f'{"defeated" if self.character_data["defeated"] else "default"}']
 
     def raycast(self):
-        if check_connections(self.radius, self, self.player) and self.has_los() and not self.has_moved:
+        if (
+            check_connections(self.radius, self, self.player)
+            and self.has_los()
+            and not self.has_moved
+            and not self.has_noticed
+        ):
             self.player.block()
             self.player.change_facing_direction(self.rect.center)
-            self.start_move()
+            self.timers['notice'].activate()
+            self.can_rotate = False
+            self.has_noticed = True
+            self.player.noticed = True
 
     def has_los(self):
         if vector(self.rect.center).distance_to(self.player.rect.center) < self.radius:
@@ -159,6 +179,10 @@ class Character(Entity):
                 self.create_dialog(self)
 
     def update(self, dt):
+        for timer in self.timers.values():
+            timer.update()
+
         self.animate(dt)
-        self.raycast()
-        self.move(dt)
+        if self.character_data['look_around']:
+            self.raycast()
+            self.move(dt)
